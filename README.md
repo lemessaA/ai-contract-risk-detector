@@ -1,16 +1,28 @@
 # AI Contract Risk Detector
 
-A production-ready multi-agent AI system for contract risk analysis before signing. This system uses LangChain and LangGraph to orchestrate multiple AI agents that analyze contracts from different perspectives and provide comprehensive risk assessments.
+A comprehensive multi-agent AI system for contract risk analysis with advanced features including AI-powered chat, version comparison, and downloadable reports. This system uses Groq LLM and FastAPI to provide intelligent contract analysis before signing.
 
-## Features
+## 🚀 Features
 
+### Core Analysis
 - **Multi-Agent Analysis**: 5 specialized AI agents working together
 - **Document Processing**: Support for PDF, DOCX, and TXT files
 - **Risk Assessment**: Detailed clause-level risk analysis with explanations
 - **Compliance Checking**: Regulatory compliance verification
 - **Before You Sign Report**: User-friendly summary with top 3 risky clauses
+
+### 🆕 New Advanced Features
+- **🤖 AI Chat**: Interactive Q&A about contracts with AI assistant
+- **🔄 Version Comparison**: Compare contract versions with AI analysis
+- **📊 Downloadable Reports**: Generate reports in PDF, HTML, JSON, and RTF formats
+- **💬 Real-time Assistance**: Ask questions, explain clauses, get improvement suggestions
+- **📈 Comprehensive Dashboard**: Complete contract analysis visualization
+
+### Technical Stack
 - **Modern Frontend**: Next.js + React + TypeScript + TailwindCSS
 - **RESTful API**: FastAPI backend with async processing
+- **AI Integration**: Groq LLM for intelligent analysis
+- **Multi-format Support**: PDF, HTML, JSON, RTF report generation
 
 ## Architecture
 
@@ -40,7 +52,7 @@ A production-ready multi-agent AI system for contract risk analysis before signi
 ### Prerequisites
 - Python 3.8+
 - Node.js 18+
-- OpenAI API key
+- Groq API key (get free at https://console.groq.com)
 
 ### Backend Setup
 
@@ -62,9 +74,8 @@ pip install -r requirements.txt
 
 4. Configure environment variables:
 ```bash
-# Copy and edit the config file
-cp config.py.example config.py
-# Add your OpenAI API key to config.py
+# Create .env file with your Groq API key
+echo "GROQ_API_KEY=your_groq_api_key_here" > .env
 ```
 
 5. Start the backend server:
@@ -93,15 +104,39 @@ npm run dev
 
 The frontend will be available at `http://localhost:3000`
 
-## Usage
+## 📖 Usage
 
-1. **Upload Contract**: Navigate to the Upload tab and select a contract file (PDF, DOCX, or TXT)
+### 1. **Upload Contract**: 
+Navigate to the Upload tab and select a contract file (PDF, DOCX, or TXT)
 
-2. **View Analysis**: Switch to the Risk Dashboard tab to see detailed clause-by-clause analysis
+### 2. **View Analysis**: 
+Switch to the Risk Dashboard tab to see detailed clause-by-clause analysis
 
-3. **Get Recommendations**: Check the Before Sign Report tab for executive summary and key recommendations
+### 3. **Get Recommendations**: 
+Check the Before Sign Report tab for executive summary and key recommendations
 
-## API Endpoints
+### 🆕 4. **AI Chat**: 
+Use the AI Chat tab to ask questions about your contract:
+- Explain specific clauses in simple terms
+- Get improvement suggestions for risky clauses
+- Ask about compliance requirements
+- Request negotiation points
+
+### 🆕 5. **Version Comparison**: 
+Use the Version Comparison tab to:
+- Compare text between contract versions
+- Upload files for comparison
+- Get AI analysis of changes
+- View similarity scores and change summaries
+
+### 🆕 6. **Download Reports**: 
+Use the Download Reports tab to:
+- Generate PDF reports for printing
+- Create HTML reports for web viewing
+- Export JSON data for integration
+- Generate RTF files for Microsoft Word
+
+## 🔌 API Endpoints
 
 ### Contract Analysis
 - `POST /api/analyze-contract` - Upload and analyze a contract
@@ -109,6 +144,25 @@ The frontend will be available at `http://localhost:3000`
 - `GET /api/analysis-results/{analysis_id}` - Get full analysis results
 - `GET /api/analysis-summary/{analysis_id}` - Get analysis summary
 - `DELETE /api/analysis/{analysis_id}` - Delete analysis
+
+### 🆕 AI Chat
+- `POST /api/ai-chat/ask` - Ask questions about contract
+- `POST /api/ai-chat/explain-clause` - Explain specific clause
+- `POST /api/ai-chat/suggest-improvements` - Get improvement suggestions
+- `POST /api/ai-chat/chat-with-analysis/{analysis_id}` - Chat with analysis results
+
+### 🆕 Version Comparison
+- `POST /api/version-comparison/compare-texts` - Compare text versions
+- `POST /api/version-comparison/compare-files` - Compare file versions
+- `POST /api/version-comparison/compare-analyses` - Compare analysis results
+
+### 🆕 Downloadable Reports
+- `POST /api/reports/generate-pdf` - Generate PDF report
+- `POST /api/reports/generate-html` - Generate HTML report
+- `POST /api/reports/generate-json` - Generate JSON report
+- `POST /api/reports/generate-word` - Generate RTF report
+- `POST /api/reports/generate-all-formats` - Generate all formats
+- `GET /api/reports/available-formats` - Get available formats
 
 ### Health Check
 - `GET /health` - Backend health status
@@ -198,11 +252,11 @@ ai-contract-risk-detector/
 
 ### Backend
 - **FastAPI**: Modern, fast web framework for building APIs
+- **Groq**: High-performance LLM inference
 - **LangChain**: Framework for building LLM applications
-- **LangGraph**: Multi-agent orchestration
-- **OpenAI**: GPT models for AI analysis
 - **PyPDF2**: PDF processing
 - **python-docx**: DOCX processing
+- **ReportLab**: PDF report generation
 - **Pydantic**: Data validation
 
 ### Frontend
@@ -219,10 +273,11 @@ ai-contract-risk-detector/
 - Input validation and sanitization
 - Secure file storage (production consideration)
 
-## Limitations
+## ⚠️ Limitations
 
 - AI analysis is for guidance purposes only and not legal advice
-- Performance depends on OpenAI API availability and response times
+- Performance depends on Groq API availability and response times
+- Rate limits on Groq free tier (6000 tokens/minute)
 - Large documents may require additional processing time
 - Currently uses in-memory storage (to be replaced with database in production)
 
