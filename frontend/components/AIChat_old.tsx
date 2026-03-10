@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { Send, MessageCircle, User, Bot } from 'lucide-react'
 
 interface Message {
   id: string
@@ -96,16 +97,14 @@ export default function AIChat({ analysisId, contractText }: AIChatProps) {
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 h-full flex flex-col">
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
-          <span className="text-white text-xs">💬</span>
-        </div>
+        <MessageCircle className="w-5 h-5 text-blue-600" />
         <h2 className="text-xl font-semibold text-gray-800">AI Contract Assistant</h2>
       </div>
       
       <div className="flex-1 overflow-y-auto mb-4 space-y-4 p-4 bg-gray-50 rounded-lg">
         {messages.length === 0 ? (
           <div className="text-center text-gray-500 py-8">
-            <div className="w-12 h-12 mx-auto mb-4 text-gray-400 text-2xl">🤖</div>
+            <Bot className="w-12 h-12 mx-auto mb-4 text-gray-400" />
             <p>Ask me anything about your contract!</p>
             <p className="text-sm">I can explain clauses, identify risks, and provide recommendations.</p>
           </div>
@@ -120,9 +119,11 @@ export default function AIChat({ analysisId, contractText }: AIChatProps) {
               <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
                 message.type === 'user' ? 'bg-blue-600' : 'bg-gray-600'
               }`}>
-                <span className="text-white text-sm">
-                  {message.type === 'user' ? '👤' : '🤖'}
-                </span>
+                {message.type === 'user' ? (
+                  <User className="w-4 h-4 text-white" />
+                ) : (
+                  <Bot className="w-4 h-4 text-white" />
+                )}
               </div>
               
               <div
@@ -141,7 +142,7 @@ export default function AIChat({ analysisId, contractText }: AIChatProps) {
         {isLoading && (
           <div className="flex gap-3 mb-4 justify-start">
             <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
-              <span className="text-white text-sm animate-pulse">🤖</span>
+              <Bot className="w-4 h-4 text-white animate-pulse" />
             </div>
             <div className="bg-white border border-gray-200 rounded-lg px-4 py-2 max-w-xs lg:max-w-md">
               <div className="flex space-x-2">
@@ -173,7 +174,7 @@ export default function AIChat({ analysisId, contractText }: AIChatProps) {
             {isLoading ? (
               <div className="w-4 h-4 border-2 border-white border-t-transparent animate-spin rounded-full"></div>
             ) : (
-              <span className="text-sm">Send</span>
+              <Send className="w-4 h-4" />
             )}
           </button>
         </div>

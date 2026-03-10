@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { Download, FileText, File, Image, FileCode } from 'lucide-react'
 
 interface ReportFormat {
   name: string
@@ -14,12 +15,7 @@ interface DownloadableReportsProps {
 }
 
 export default function DownloadableReports({ analysisId }: DownloadableReportsProps) {
-  const [availableFormats, setAvailableFormats] = useState<ReportFormat[]>([
-    { name: 'PDF', description: 'Portable Document Format', available: true, mime_type: 'application/pdf' },
-    { name: 'HTML', description: 'Web page format', available: true, mime_type: 'text/html' },
-    { name: 'JSON', description: 'Data format', available: true, mime_type: 'application/json' },
-    { name: 'RTF', description: 'Word-compatible format', available: true, mime_type: 'application/rtf' }
-  ])
+  const [availableFormats, setAvailableFormats] = useState<ReportFormat[]>([])
   const [selectedFormats, setSelectedFormats] = useState<string[]>([])
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedReports, setGeneratedReports] = useState<any>({})
@@ -33,13 +29,10 @@ export default function DownloadableReports({ analysisId }: DownloadableReportsP
       const response = await fetch('/api/reports/available-formats')
       if (response.ok) {
         const data = await response.json()
-        if (data.formats && Array.isArray(data.formats)) {
-          setAvailableFormats(data.formats)
-        }
+        setAvailableFormats(data.formats || [])
       }
     } catch (error) {
       console.error('Failed to fetch formats:', error)
-      // Keep using the default formats
     }
   }
 
@@ -147,22 +140,22 @@ export default function DownloadableReports({ analysisId }: DownloadableReportsP
   const getFormatIcon = (format: string) => {
     switch (format.toLowerCase()) {
       case 'pdf':
-        return '📄'
+        return <FileText className="w-4 h-4" />
       case 'html':
-        return '🌐'
+        return <FileCode className="w-4 h-4" />
       case 'json':
-        return '📋'
+        return <File className="w-4 h-4" />
       case 'word':
-        return '📝'
+        return <File className="w-4 h-4" />
       default:
-        return '📄'
+        return <File className="w-4 h-4" />
     }
   }
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 h-full flex flex-col">
       <div className="flex items-center gap-2 mb-4">
-        <span className="text-green-600 text-xl">⬇️</span>
+        <Download className="w-5 h-5 text-green-600" />
         <h2 className="text-xl font-semibold text-gray-800">Downloadable Reports</h2>
       </div>
 
@@ -185,7 +178,7 @@ export default function DownloadableReports({ analysisId }: DownloadableReportsP
                   <div className={`p-2 rounded-full ${
                     format.available ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-400'
                   }`}>
-                    <span className="text-xl">{getFormatIcon(format.name)}</span>
+                    {getFormatIcon(format.name)}
                   </div>
                   
                   <div className="text-center">
@@ -218,7 +211,7 @@ export default function DownloadableReports({ analysisId }: DownloadableReportsP
               <div className="w-4 h-4 border-2 border-white border-t-transparent animate-spin rounded-full"></div>
             ) : (
               <>
-                <span>⬇️</span>
+                <Download className="w-4 h-4" />
                 Generate Selected
               </>
             )}
@@ -232,7 +225,7 @@ export default function DownloadableReports({ analysisId }: DownloadableReportsP
         {Object.keys(generatedReports).length > 0 && (
           <div className="bg-green-50 border border-green-200 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-green-800 mb-4 flex items-center gap-2">
-              <span>📊</span>
+              <Image className="w-5 h-5" />
               Generated Reports
             </h3>
             
@@ -243,7 +236,7 @@ export default function DownloadableReports({ analysisId }: DownloadableReportsP
                     <div className={`p-2 rounded-full ${
                       report.success ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
                     }`}>
-                      <span className="text-sm">{getFormatIcon(format)}</span>
+                      {getFormatIcon(format)}
                     </div>
                     
                     <div>
@@ -263,7 +256,7 @@ export default function DownloadableReports({ analysisId }: DownloadableReportsP
                         : 'bg-gray-300 text-gray-400 cursor-not-allowed'
                     }`}
                   >
-                    <span>⬇️</span>
+                    <Download className="w-4 h-4" />
                   </button>
                 </div>
               ))}

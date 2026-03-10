@@ -4,10 +4,20 @@ import { useState } from 'react';
 import UploadContract from '@/components/UploadContract';
 import RiskDashboard from '@/components/RiskDashboard';
 import BeforeSignReport from '@/components/BeforeSignReport';
-import { DocumentTextIcon, ChartBarIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
+import AIChat from '@/components/AIChat';
+import VersionComparison from '@/components/VersionComparison';
+import DownloadableReports from '@/components/DownloadableReports';
+import { 
+  DocumentTextIcon, 
+  ChartBarIcon, 
+  ShieldCheckIcon,
+  ChatBubbleLeftRightIcon,
+  ArrowsRightLeftIcon,
+  DocumentArrowDownIcon
+} from '@heroicons/react/24/outline';
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<'upload' | 'dashboard' | 'report'>('upload');
+  const [activeTab, setActiveTab] = useState<'upload' | 'dashboard' | 'report' | 'chat' | 'compare' | 'download'>('upload');
   const [analysisId, setAnalysisId] = useState<string | null>(null);
   const [filename, setFilename] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -48,6 +58,26 @@ export default function Home() {
       name: 'Before Sign Report',
       icon: ShieldCheckIcon,
       description: 'Get recommendations before signing',
+      disabled: !analysisId
+    },
+    {
+      id: 'chat' as const,
+      name: 'AI Chat',
+      icon: ChatBubbleLeftRightIcon,
+      description: 'Ask questions about your contract',
+      disabled: !analysisId
+    },
+    {
+      id: 'compare' as const,
+      name: 'Version Comparison',
+      icon: ArrowsRightLeftIcon,
+      description: 'Compare contract versions'
+    },
+    {
+      id: 'download' as const,
+      name: 'Download Reports',
+      icon: DocumentArrowDownIcon,
+      description: 'Generate downloadable reports',
       disabled: !analysisId
     }
   ];
@@ -129,7 +159,25 @@ export default function Home() {
           />
         )}
 
-        {activeTab !== 'upload' && !analysisId && (
+        {activeTab === 'chat' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <AIChat analysisId={analysisId || undefined} />
+          </div>
+        )}
+
+        {activeTab === 'compare' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <VersionComparison />
+          </div>
+        )}
+
+        {activeTab === 'download' && analysisId && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <DownloadableReports analysisId={analysisId} />
+          </div>
+        )}
+
+        {activeTab !== 'upload' && activeTab !== 'compare' && !analysisId && (
           <div className="text-center py-12">
             <DocumentTextIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No Contract Uploaded</h3>
