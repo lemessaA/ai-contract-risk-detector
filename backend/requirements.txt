@@ -1,0 +1,27 @@
+# Core Dependencies
+fastapi
+uvicorn[standard]
+python-multipart
+
+# AI/ML Dependencies
+langchain
+langchain-groq    
+langgraph
+
+# Document Processing
+PyPDF2
+python-docx 
+
+# Data Processing
+pydantic
+pydantic-settings
+
+# HTTP and Utilities
+httpx
+python-jose[cryptography]
+
+# Development Dependencies
+pytest
+pytest-asyncio
+black
+flake8
