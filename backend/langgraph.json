@@ -1,0 +1,7 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "agent": "./agents/contract_agent_langgraph.py:_build_workflow"
+  },
+  "env": ".env"
+}

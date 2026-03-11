@@ -4,8 +4,10 @@ Sequential execution without LangGraph for testing
 """
 from typing import Dict, Any, List, Optional
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
+from langchain_core.tracers import LangChainTracer
 import asyncio
 import json
+import os
 
 from services.document_parser import DocumentParserAgent
 from services.clause_extractor import ClauseExtractorAgent
@@ -24,6 +26,13 @@ class ContractAnalysisOrchestrator:
         self.risk_analyzer = RiskAnalyzerAgent()
         self.compliance_checker = ComplianceCheckerAgent()
         self.report_generator = BeforeSignReportAgent()
+        
+        # Initialize LangSmith tracer if API key is available
+        self.tracer = None
+        if os.getenv("LANGCHAIN_API_KEY"):
+            self.tracer = LangChainTracer(
+                project_name=os.getenv("LANGCHAIN_PROJECT", "contract-risk-detector")
+            )
     
     async def analyze_contract(self, file_path: str) -> Dict[str, Any]:
         """

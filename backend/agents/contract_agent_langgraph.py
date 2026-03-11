@@ -337,3 +337,10 @@ class ContractAnalysisOrchestrator:
                 "report_generation": False
             }
         }
+
+
+# Export the workflow for LangGraph Studio
+def _build_workflow() -> StateGraph:
+    """Build and return the LangGraph workflow for Studio visualization"""
+    orchestrator = ContractAnalysisOrchestrator()
+    return orchestrator._build_workflow()

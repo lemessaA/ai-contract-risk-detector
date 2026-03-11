@@ -12,6 +12,7 @@ from api.routes_contract import router as contract_router
 from api.routes_ai_chat import router as ai_chat_router
 from api.routes_version_comparison import router as version_comparison_router
 from api.routes_reports import router as reports_router
+from middleware import GuardrailsMiddleware, SecurityHeadersMiddleware, AuditLoggerMiddleware
 
 # Create FastAPI app
 app = FastAPI(
@@ -29,6 +30,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add security and guardrails middleware
+app.add_middleware(AuditLoggerMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(GuardrailsMiddleware, enable_rate_limiting=True)
 
 # Create uploads directory if it doesn't exist
 os.makedirs(settings.upload_dir, exist_ok=True)

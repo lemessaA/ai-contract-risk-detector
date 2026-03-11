@@ -14,6 +14,7 @@ import logging
 from config import settings
 from agents.contract_agent import ContractAnalysisOrchestrator
 from storage import get_analysis_store, store_analysis
+from guardrails import guardrails_system
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +50,22 @@ async def analyze_contract(
         if not file.filename:
             raise HTTPException(status_code=400, detail="No file provided")
         
+        # Guardrails file validation
+        file_content = await file.read()
+        file_validation = guardrails_system.validate_input(
+            file.filename,
+            input_type="file",
+            filename=file.filename,
+            file_size=len(file_content),
+            content_type=file.content_type
+        )
+        
+        if file_validation.triggered and file_validation.action.value == "block":
+            raise HTTPException(
+                status_code=400,
+                detail=f"File validation failed: {file_validation.message}"
+            )
+        
         file_extension = Path(file.filename).suffix.lower()
         if file_extension not in settings.allowed_extensions:
             raise HTTPException(
@@ -57,7 +74,6 @@ async def analyze_contract(
             )
         
         # Check file size
-        file_content = await file.read()
         if len(file_content) > settings.max_file_size:
             raise HTTPException(
                 status_code=400,
@@ -66,6 +82,17 @@ async def analyze_contract(
         
         # Generate unique analysis ID
         analysis_id = str(uuid.uuid4())
+        
+        # Check behavioral constraints
+        behavioral_result = guardrails_system.check_behavioral_constraints(
+            analysis_id=analysis_id
+        )
+        
+        if behavioral_result.triggered and behavioral_result.action.value == "block":
+            raise HTTPException(
+                status_code=429,
+                detail=behavioral_result.message
+            )
         
         # Save uploaded file
         upload_filename = f"{analysis_id}_{file.filename}"

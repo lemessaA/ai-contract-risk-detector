@@ -1,0 +1,325 @@
+{
+  "summary": {
+    "total_tests": 63,
+    "passed": 55,
+    "failed": 8,
+    "success_rate": 87.3015873015873
+  },
+  "results": [
+    {
+      "test": "Empty Input Blocking",
+      "passed": true,
+      "details": "Action: block, Message: Empty input is not allowed"
+    },
+    {
+      "test": "Malicious Code Blocking",
+      "passed": true,
+      "details": "Action: block, Risk: high"
+    },
+    {
+      "test": "SQL Injection Blocking",
+      "passed": true,
+      "details": "Action: block, Risk: high"
+    },
+    {
+      "test": "Sensitive Info Detection",
+      "passed": true,
+      "details": "Action: sanitize, Sanitized: True"
+    },
+    {
+      "test": "Valid Input Allowance",
+      "passed": true,
+      "details": "Action: allow, Risk: low"
+    },
+    {
+      "test": "Suspicious Filename Blocking",
+      "passed": true,
+      "details": "Action: block, Risk: high"
+    },
+    {
+      "test": "Oversized File Blocking",
+      "passed": true,
+      "details": "Action: block, Message: File size (15.0MB) exceeds maximum allowed size (10MB)"
+    },
+    {
+      "test": "Valid File Allowance",
+      "passed": true,
+      "details": "Action: allow, Risk: low"
+    },
+    {
+      "test": "Legal Advice Sanitization",
+      "passed": true,
+      "details": "Action: sanitize, Sanitized: True"
+    },
+    {
+      "test": "Guarantee Claims Sanitization",
+      "passed": true,
+      "details": "Action: sanitize"
+    },
+    {
+      "test": "Disclaimer Addition",
+      "passed": true,
+      "details": "Action: sanitize, Has disclaimers: True"
+    },
+    {
+      "test": "Valid Output Allowance",
+      "passed": false,
+      "details": "Action: sanitize, Risk: high"
+    },
+    {
+      "test": "Rate Limit Check 1",
+      "passed": true,
+      "details": "Request 1: allow"
+    },
+    {
+      "test": "Rate Limit Check 2",
+      "passed": true,
+      "details": "Request 2: allow"
+    },
+    {
+      "test": "Rate Limit Check 3",
+      "passed": true,
+      "details": "Request 3: allow"
+    },
+    {
+      "test": "Rate Limit Check 4",
+      "passed": true,
+      "details": "Request 4: allow"
+    },
+    {
+      "test": "Rate Limit Check 5",
+      "passed": true,
+      "details": "Request 5: allow"
+    },
+    {
+      "test": "Rate Limit Check 6",
+      "passed": true,
+      "details": "Request 6: allow"
+    },
+    {
+      "test": "Rate Limit Check 7",
+      "passed": true,
+      "details": "Request 7: allow"
+    },
+    {
+      "test": "Rate Limit Check 8",
+      "passed": true,
+      "details": "Request 8: allow"
+    },
+    {
+      "test": "Rate Limit Check 9",
+      "passed": true,
+      "details": "Request 9: allow"
+    },
+    {
+      "test": "Rate Limit Check 10",
+      "passed": true,
+      "details": "Request 10: allow"
+    },
+    {
+      "test": "Rate Limit Check 11",
+      "passed": true,
+      "details": "Request 11: allow"
+    },
+    {
+      "test": "Rate Limit Check 12",
+      "passed": true,
+      "details": "Request 12: allow"
+    },
+    {
+      "test": "Rate Limit Check 13",
+      "passed": true,
+      "details": "Request 13: allow"
+    },
+    {
+      "test": "Rate Limit Check 14",
+      "passed": true,
+      "details": "Request 14: allow"
+    },
+    {
+      "test": "Rate Limit Check 15",
+      "passed": true,
+      "details": "Request 15: allow"
+    },
+    {
+      "test": "Rate Limit Check 16",
+      "passed": true,
+      "details": "Request 16: allow"
+    },
+    {
+      "test": "Rate Limit Check 17",
+      "passed": true,
+      "details": "Request 17: allow"
+    },
+    {
+      "test": "Rate Limit Check 18",
+      "passed": true,
+      "details": "Request 18: allow"
+    },
+    {
+      "test": "Rate Limit Check 19",
+      "passed": true,
+      "details": "Request 19: allow"
+    },
+    {
+      "test": "Rate Limit Check 20",
+      "passed": true,
+      "details": "Request 20: allow"
+    },
+    {
+      "test": "Rate Limit Check 21",
+      "passed": true,
+      "details": "Request 21: allow"
+    },
+    {
+      "test": "Rate Limit Check 22",
+      "passed": true,
+      "details": "Request 22: allow"
+    },
+    {
+      "test": "Rate Limit Check 23",
+      "passed": true,
+      "details": "Request 23: allow"
+    },
+    {
+      "test": "Rate Limit Check 24",
+      "passed": true,
+      "details": "Request 24: allow"
+    },
+    {
+      "test": "Rate Limit Check 25",
+      "passed": true,
+      "details": "Request 25: allow"
+    },
+    {
+      "test": "Rate Limit Check 26",
+      "passed": true,
+      "details": "Request 26: allow"
+    },
+    {
+      "test": "Rate Limit Check 27",
+      "passed": true,
+      "details": "Request 27: allow"
+    },
+    {
+      "test": "Rate Limit Check 28",
+      "passed": true,
+      "details": "Request 28: allow"
+    },
+    {
+      "test": "Rate Limit Check 29",
+      "passed": true,
+      "details": "Request 29: allow"
+    },
+    {
+      "test": "Rate Limit Check 30",
+      "passed": true,
+      "details": "Request 30: allow"
+    },
+    {
+      "test": "Rate Limit Enforcement",
+      "passed": true,
+      "details": "Request 31: block"
+    },
+    {
+      "test": "Concurrent Analysis 1",
+      "passed": false,
+      "details": "Analysis 1: block"
+    },
+    {
+      "test": "Concurrent Analysis 2",
+      "passed": false,
+      "details": "Analysis 2: block"
+    },
+    {
+      "test": "Concurrent Analysis 3",
+      "passed": false,
+      "details": "Analysis 3: block"
+    },
+    {
+      "test": "Concurrent Analysis 4",
+      "passed": false,
+      "details": "Analysis 4: block"
+    },
+    {
+      "test": "Concurrent Analysis 5",
+      "passed": false,
+      "details": "Analysis 5: block"
+    },
+    {
+      "test": "Concurrent Analysis Limit",
+      "passed": true,
+      "details": "Analysis 6: block"
+    },
+    {
+      "test": "Blocked Patterns Available",
+      "passed": true,
+      "details": "Found 7 blocked patterns"
+    },
+    {
+      "test": "Sensitive Patterns Available",
+      "passed": true,
+      "details": "Found 7 sensitive patterns"
+    },
+    {
+      "test": "Required Disclaimers Available",
+      "passed": true,
+      "details": "Found 3 required disclaimers"
+    },
+    {
+      "test": "Security Headers Available",
+      "passed": true,
+      "details": "Found 7 security headers"
+    },
+    {
+      "test": "Upload Rate Limit",
+      "passed": true,
+      "details": "Upload limit: 10 requests/minute"
+    },
+    {
+      "test": "GDPR Requirements",
+      "passed": true,
+      "details": "Found 5 GDPR requirements"
+    },
+    {
+      "test": "HIPAA Requirements",
+      "passed": true,
+      "details": "Found 5 HIPAA requirements"
+    },
+    {
+      "test": "SOX Requirements",
+      "passed": true,
+      "details": "Found 5 SOX requirements"
+    },
+    {
+      "test": "Transparency Guidelines",
+      "passed": true,
+      "details": "Found 3 transparency guidelines"
+    },
+    {
+      "test": "Fairness Guidelines",
+      "passed": true,
+      "details": "Found 3 fairness guidelines"
+    },
+    {
+      "test": "Ethical Response Validation",
+      "passed": true,
+      "details": "Validation results: {'disclose_ai_nature': True, 'explain_limitations': True, 'provide_confidence_scores': True}"
+    },
+    {
+      "test": "Normal Processing",
+      "passed": false,
+      "details": "Success: False, Guardrails: True"
+    },
+    {
+      "test": "Blocked Input Processing",
+      "passed": true,
+      "details": "Success: False, Error: Input contains prohibited content"
+    },
+    {
+      "test": "Sanitized Processing",
+      "passed": false,
+      "details": "Success: False, Warnings: 0"
+    }
+  ]
+}

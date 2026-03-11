@@ -77,11 +77,10 @@ class VersionComparisonAgent:
             comparison = {
                 "risk_comparison": self._compare_risks(original_analysis, modified_analysis),
                 "compliance_comparison": self._compare_compliance(original_analysis, modified_analysis),
-                "clause_comparison": self._compare_clauses(original_analysis, modified_analysis),
-                "summary_comparison": self._compare_summaries(original_analysis, modified_analysis, version_labels)
+                "clause_comparison": self._compare_clause_counts(original_analysis, modified_analysis)
             }
             
-            # Get summary comparison synchronously to avoid await issues
+            # Get summary comparison asynchronously
             summary_comparison = await self._compare_summaries(original_analysis, modified_analysis, version_labels)
             comparison["summary_comparison"] = summary_comparison
             
@@ -313,7 +312,7 @@ Please analyze the changes and provide a comprehensive comparison."""
         except Exception as e:
             return {"error": f"Compliance comparison failed: {str(e)}"}
     
-    def _compare_clauses(self, original_analysis: Dict[str, Any], modified_analysis: Dict[str, Any]) -> Dict[str, Any]:
+    def _compare_clause_counts(self, original_analysis: Dict[str, Any], modified_analysis: Dict[str, Any]) -> Dict[str, Any]:
         """Compare clause counts and categories"""
         try:
             original_clauses = original_analysis.get("clauses_extracted", {}).get("clauses", [])

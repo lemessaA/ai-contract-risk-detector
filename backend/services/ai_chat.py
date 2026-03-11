@@ -7,6 +7,7 @@ from typing import Dict, Any, List, Optional
 from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage, SystemMessage
 from config import settings
+from guardrails import guardrails_system
 
 
 class AIChatAgent:
@@ -34,6 +35,42 @@ class AIChatAgent:
             Dictionary containing the AI response
         """
         try:
+            # Input validation with guardrails
+            input_result = guardrails_system.validate_input(
+                question, 
+                input_type="text", 
+                context="chat_question"
+            )
+            
+            if input_result.triggered and input_result.action.value == "block":
+                return {
+                    "success": False,
+                    "error": input_result.message,
+                    "guardrail_triggered": True,
+                    "risk_level": input_result.risk_level.value
+                }
+            
+            # Use sanitized input if needed
+            safe_question = input_result.sanitized_content or question
+            
+            # Validate contract text if provided
+            if contract_text:
+                contract_result = guardrails_system.validate_input(
+                    contract_text,
+                    input_type="text",
+                    context="contract_text"
+                )
+                
+                if contract_result.triggered and contract_result.action.value == "block":
+                    return {
+                        "success": False,
+                        "error": "Contract text contains prohibited content",
+                        "guardrail_triggered": True,
+                        "risk_level": contract_result.risk_level.value
+                    }
+                
+                contract_text = contract_result.sanitized_content or contract_text
+            
             # Build context from available information
             context_parts = []
             
@@ -94,11 +131,33 @@ Please provide a helpful and accurate response based on the contract information
             
             response = await self.llm.ainvoke(messages)
             
+            # Output validation with guardrails
+            output_result = guardrails_system.validate_output(
+                response.content,
+                context="contract_analysis"
+            )
+            
+            if output_result.triggered and output_result.action.value == "block":
+                return {
+                    "success": False,
+                    "error": "AI response contains prohibited content",
+                    "guardrail_triggered": True,
+                    "risk_level": output_result.risk_level.value
+                }
+            
+            # Use sanitized output if needed
+            final_answer = output_result.sanitized_content or response.content
+            
             return {
                 "success": True,
                 "question": question,
-                "answer": response.content,
+                "answer": final_answer,
                 "context_used": bool(contract_text or analysis_results),
+                "guardrail_triggered": input_result.triggered or output_result.triggered,
+                "warnings": [
+                    msg for msg in [input_result.message, output_result.message]
+                    if msg and ("sanitized" in msg.lower() or "warning" in msg.lower())
+                ],
                 "timestamp": self._get_timestamp()
             }
             

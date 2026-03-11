@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     
     # LLM Configuration
     groq_api_key: Optional[str] = os.getenv("GROQ_API_KEY")
-    groq_model: str = "openai/gpt-oss-20b"
+    groq_model: str = "llama-3.1-8b-instant"
     max_tokens: int = 4000
     temperature: float = 0.1
     
