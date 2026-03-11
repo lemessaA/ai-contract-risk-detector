@@ -12,6 +12,7 @@ from api.routes_contract import router as contract_router
 from api.routes_ai_chat import router as ai_chat_router
 from api.routes_version_comparison import router as version_comparison_router
 from api.routes_reports import router as reports_router
+from api.routes_web_content import router as web_content_router
 from middleware import GuardrailsMiddleware, SecurityHeadersMiddleware, AuditLoggerMiddleware
 
 # Create FastAPI app
@@ -47,6 +48,7 @@ app.include_router(contract_router, prefix="/api", tags=["contracts"])
 app.include_router(ai_chat_router)
 app.include_router(version_comparison_router)
 app.include_router(reports_router)
+app.include_router(web_content_router, prefix="/api/web-content", tags=["web-content"])
 
 @app.get("/")
 async def root():
