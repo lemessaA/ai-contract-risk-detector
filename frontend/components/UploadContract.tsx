@@ -1,5 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import { CloudArrowUpIcon, DocumentIcon, CheckCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { 
+  CloudArrowUpIcon, 
+  DocumentIcon, 
+  CheckCircleIcon, 
+  ExclamationTriangleIcon,
+  ArrowUpTrayIcon
+} from '@heroicons/react/24/outline';
 
 interface UploadContractProps {
   onUploadStart: (filename: string) => void;
@@ -17,6 +23,7 @@ const UploadContract: React.FC<UploadContractProps> = ({
   const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -48,14 +55,8 @@ const UploadContract: React.FC<UploadContractProps> = ({
       return;
     }
 
-    // Validate file size (10MB max)
-    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
-    if (file.size > maxSize) {
-      onUploadError('File size exceeds 10MB limit. Please upload a smaller file.');
-      return;
-    }
-
     setSelectedFile(file);
+    setUploadProgress(0);
   };
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,6 +74,7 @@ const UploadContract: React.FC<UploadContractProps> = ({
     try {
       onUploadStart(selectedFile.name);
       setUploadProgress(0);
+      setIsAnalyzing(true);
 
       const response = await fetch('/api/analyze-contract', {
         method: 'POST',
@@ -85,15 +87,28 @@ const UploadContract: React.FC<UploadContractProps> = ({
         throw new Error(data.detail || 'Upload failed');
       }
 
+      // Simulate progress
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 10;
+        });
+      }, 200);
+
       setUploadProgress(100);
       onUploadComplete(data.analysis_id, selectedFile.name);
       setSelectedFile(null);
       setUploadProgress(0);
+      setIsAnalyzing(false);
 
     } catch (error) {
       console.error('Upload error:', error);
       onUploadError(error instanceof Error ? error.message : 'Upload failed');
       setUploadProgress(0);
+      setIsAnalyzing(false);
     }
   };
 
@@ -106,139 +121,199 @@ const UploadContract: React.FC<UploadContractProps> = ({
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-          Upload Contract for Analysis
-        </h2>
-
-        {/* File Upload Area */}
-        <div
-          className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-            dragActive
-              ? 'border-blue-500 bg-blue-50'
-              : 'border-gray-300 hover:border-gray-400'
-          } ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}
-          onDragEnter={handleDrag}
-          onDragLeave={handleDrag}
-          onDragOver={handleDrag}
-          onDrop={handleDrop}
-        >
-          <input
-            type="file"
-            id="file-upload"
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            onChange={handleFileInputChange}
-            accept=".pdf,.docx,.txt"
-            disabled={isUploading}
-          />
-
-          <div className="flex flex-col items-center space-y-4">
-            <CloudArrowUpIcon className="h-12 w-12 text-gray-400" />
-            
-            <div>
-              <p className="text-lg font-medium text-gray-900">
-                {dragActive ? 'Drop your file here' : 'Drag and drop your contract here'}
-              </p>
-              <p className="text-sm text-gray-500 mt-1">
-                or click to browse
-              </p>
-            </div>
-
-            <div className="text-xs text-gray-400">
-              Supported formats: PDF, DOCX, TXT (Max 10MB)
+    <div className="w-full max-w-4xl mx-auto">
+      {/* AI Analysis Header */}
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center space-x-3 mb-4">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-lg opacity-75 animate-pulse"></div>
+            <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 p-3 rounded-full">
+              <DocumentIcon className="h-8 w-8 text-white" />
             </div>
           </div>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+            AI Contract Analysis
+          </h2>
         </div>
+        <p className="text-purple-200 text-lg">
+          Upload your contract for comprehensive AI-powered risk analysis
+        </p>
+        <div className="flex items-center justify-center space-x-4 mt-2">
+          <div className="flex items-center space-x-1 text-purple-300 text-sm">
+            <DocumentIcon className="h-4 w-4" />
+            <span>Multi-Agent Processing</span>
+          </div>
+          <div className="flex items-center space-x-1 text-purple-300 text-sm">
+            <DocumentIcon className="h-4 w-4" />
+            <span>Advanced AI Analysis</span>
+          </div>
+        </div>
+      </div>
 
-        {/* Selected File Info */}
-        {selectedFile && !isUploading && (
-          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <DocumentIcon className="h-8 w-8 text-blue-500" />
-                <div>
-                  <p className="font-medium text-gray-900">{selectedFile.name}</p>
-                  <p className="text-sm text-gray-500">{formatFileSize(selectedFile.size)}</p>
+      {/* File Upload Area */}
+      <div
+        className={`relative border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 ${
+          dragActive
+            ? 'border-purple-400 bg-purple-500/10 backdrop-blur-sm'
+            : 'border-purple-300/50 hover:border-purple-400 bg-white/5 backdrop-blur-sm'
+        } ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}
+        onDragEnter={handleDrag}
+        onDragLeave={handleDrag}
+        onDragOver={handleDrag}
+        onDrop={handleDrop}
+      >
+        {/* Animated Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl opacity-50"></div>
+        
+        <input
+          type="file"
+          id="file-upload"
+          className="hidden"
+          accept=".pdf,.docx,.txt"
+          onChange={handleFileInputChange}
+          disabled={isUploading}
+        />
+        
+        <div className="relative z-10">
+          {isUploading ? (
+            <div className="space-y-6">
+              {/* AI Processing Animation */}
+              <div className="flex justify-center">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-lg opacity-75 animate-pulse"></div>
+                  <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 p-4 rounded-full">
+                    <DocumentIcon className="h-12 w-12 text-white animate-spin" />
+                  </div>
                 </div>
               </div>
+              
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-2">
+                  {isAnalyzing ? 'AI Analyzing Contract...' : 'Uploading...'}
+                </h3>
+                <p className="text-purple-200 mb-4">
+                  {isAnalyzing 
+                    ? 'Our AI agents are analyzing your contract for risks and compliance issues'
+                    : 'Securely uploading your contract to our AI system'
+                  }
+                </p>
+                
+                {/* Progress Bar */}
+                <div className="w-full bg-purple-900/50 rounded-full h-3 overflow-hidden">
+                  <div 
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all duration-500 ease-out"
+                    style={{ width: `${uploadProgress}%` }}
+                  >
+                    <div className="h-full bg-white/20 rounded-full animate-pulse"></div>
+                  </div>
+                </div>
+                
+                <p className="text-purple-200 text-sm mt-2">{uploadProgress}% Complete</p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {/* Upload Icon */}
+              <div className="flex justify-center">
+                <div className={`relative ${dragActive ? 'animate-bounce' : ''}`}>
+                  <div className={`absolute inset-0 bg-gradient-to-r ${dragActive ? 'from-purple-400 to-pink-400' : 'from-purple-500 to-pink-500'} rounded-full blur-lg opacity-75`}></div>
+                  <div className={`relative bg-gradient-to-r ${dragActive ? 'from-purple-500 to-pink-500' : 'from-purple-600 to-pink-600'} p-6 rounded-full`}>
+                    <CloudArrowUpIcon className="h-16 w-16 text-white" />
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-2">
+                  {dragActive ? 'Drop your contract here' : 'Upload Contract for AI Analysis'}
+                </h3>
+                <p className="text-purple-200 mb-4">
+                  Drag and drop your contract file, or click to browse
+                </p>
+                <div className="flex items-center justify-center space-x-4 text-purple-300 text-sm">
+                  <span>PDF</span>
+                  <span>•</span>
+                  <span>DOCX</span>
+                  <span>•</span>
+                  <span>TXT</span>
+                </div>
+              </div>
+              
+              <label
+                htmlFor="file-upload"
+                className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-lg cursor-pointer hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105"
+              >
+                <ArrowUpTrayIcon className="h-5 w-5" />
+                <span>Choose File</span>
+              </label>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Selected File Info */}
+      {selectedFile && !isUploading && (
+        <div className="mt-6 p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-purple-300/30">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-2 rounded-lg">
+                <DocumentIcon className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <p className="text-white font-medium">{selectedFile.name}</p>
+                <p className="text-purple-200 text-sm">{formatFileSize(selectedFile.size)}</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-3">
               <button
                 onClick={() => setSelectedFile(null)}
-                className="text-red-500 hover:text-red-700 text-sm font-medium"
+                className="text-purple-300 hover:text-white transition-colors"
               >
-                Remove
+                Cancel
+              </button>
+              <button
+                onClick={handleUpload}
+                className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-lg hover:from-green-600 hover:to-emerald-600 transition-all duration-300 transform hover:scale-105 flex items-center space-x-2"
+              >
+                <DocumentIcon className="h-4 w-4" />
+                <span>Analyze with AI</span>
               </button>
             </div>
-
-            <button
-              onClick={handleUpload}
-              className="mt-4 w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors font-medium"
-            >
-              Start Analysis
-            </button>
-          </div>
-        )}
-
-        {/* Upload Progress */}
-        {isUploading && (
-          <div className="mt-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-700">Uploading and analyzing...</span>
-              <span className="text-sm text-gray-500">{uploadProgress}%</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${uploadProgress}%` }}
-              />
-            </div>
-            <p className="text-xs text-gray-500 mt-2 text-center">
-              This may take 5-10 minutes. We'll notify you when it's complete.
-            </p>
-          </div>
-        )}
-
-        {/* Features */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="text-center p-4 bg-blue-50 rounded-lg">
-            <CheckCircleIcon className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-            <h3 className="font-medium text-gray-900">Multi-Agent Analysis</h3>
-            <p className="text-sm text-gray-600 mt-1">
-              5 AI agents analyze your contract comprehensively
-            </p>
-          </div>
-          
-          <div className="text-center p-4 bg-green-50 rounded-lg">
-            <CheckCircleIcon className="h-8 w-8 text-green-600 mx-auto mb-2" />
-            <h3 className="font-medium text-gray-900">Risk Detection</h3>
-            <p className="text-sm text-gray-600 mt-1">
-              Identify legal risks before you sign
-            </p>
-          </div>
-          
-          <div className="text-center p-4 bg-purple-50 rounded-lg">
-            <CheckCircleIcon className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-            <h3 className="font-medium text-gray-900">Compliance Check</h3>
-            <p className="text-sm text-gray-600 mt-1">
-              Ensure essential clauses are included
-            </p>
           </div>
         </div>
+      )}
 
-        {/* Info Box */}
-        <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <div className="flex items-start space-x-3">
-            <ExclamationTriangleIcon className="h-5 w-5 text-yellow-600 mt-0.5" />
-            <div>
-              <h4 className="font-medium text-yellow-800">Before You Upload</h4>
-              <ul className="text-sm text-yellow-700 mt-2 space-y-1">
-                <li>• Ensure your contract is complete and readable</li>
-                <li>• Remove any sensitive personal information</li>
-                <li>• This tool provides guidance, not legal advice</li>
-                <li>• Always consult with a qualified attorney for legal matters</li>
-              </ul>
-            </div>
+      {/* AI Features */}
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-purple-300/30">
+          <div className="flex items-center space-x-2 mb-2">
+            <DocumentIcon className="h-6 w-6 text-purple-400" />
+            <h4 className="text-white font-semibold">Risk Analysis</h4>
           </div>
+          <p className="text-purple-200 text-sm">
+            AI-powered identification of potential risks and liabilities
+          </p>
+        </div>
+        
+        <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-purple-300/30">
+          <div className="flex items-center space-x-2 mb-2">
+            <DocumentIcon className="h-6 w-6 text-purple-400" />
+            <h4 className="text-white font-semibold">Compliance Check</h4>
+          </div>
+          <p className="text-purple-200 text-sm">
+            Automated compliance verification against legal standards
+          </p>
+        </div>
+        
+        <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-purple-300/30">
+          <div className="flex items-center space-x-2 mb-2">
+            <DocumentIcon className="h-6 w-6 text-purple-400" />
+            <h4 className="text-white font-semibold">Smart Reports</h4>
+          </div>
+          <p className="text-purple-200 text-sm">
+            Comprehensive before-sign reports with AI insights
+          </p>
         </div>
       </div>
     </div>
