@@ -71,9 +71,22 @@ async def compare_contract_files(
         original_content = await original_file.read()
         modified_content = await modified_file.read()
         
-        # Decode text content
-        original_text = original_content.decode('utf-8')
-        modified_text = modified_content.decode('utf-8')
+        # Decode text content with error handling
+        try:
+            original_text = original_content.decode('utf-8')
+        except UnicodeDecodeError:
+            try:
+                original_text = original_content.decode('latin-1')
+            except UnicodeDecodeError:
+                original_text = original_content.decode('utf-8', errors='ignore')
+        
+        try:
+            modified_text = modified_content.decode('utf-8')
+        except UnicodeDecodeError:
+            try:
+                modified_text = modified_content.decode('latin-1')
+            except UnicodeDecodeError:
+                modified_text = modified_content.decode('utf-8', errors='ignore')
         
         # Compare versions
         response = await comparison_agent.compare_versions(

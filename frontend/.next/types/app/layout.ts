@@ -1,4 +1,4 @@
-// File: /home/lemessa-ahmed/CascadeProjects/ai-contract-risk-detector/frontend/app/layout.tsx
+// File: /home/lemessa-ahmed/ai-contract-risk-detector/frontend/app/layout.tsx
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
