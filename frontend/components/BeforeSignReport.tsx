@@ -32,6 +32,7 @@ const BeforeSignReport: React.FC<BeforeSignReportProps> = ({ analysisId, isActiv
     setError(null);
 
     try {
+      // First, try to get the report from analysis results
       const response = await fetch(`/api/analysis-results/${analysisId}`);
       const data = await response.json();
 
@@ -42,13 +43,43 @@ const BeforeSignReport: React.FC<BeforeSignReportProps> = ({ analysisId, isActiv
       if (data.success && data.results?.report_generated?.before_sign_report) {
         setReportData(data.results.report_generated.before_sign_report);
       } else {
-        throw new Error('No report data available');
+        // If no report exists, try to generate it
+        await generateReport();
       }
     } catch (err) {
       console.error('Error fetching report data:', err);
       setError(err instanceof Error ? err.message : 'Failed to load report data');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const generateReport = async () => {
+    try {
+      const response = await fetch('/api/reports/generate-all-formats', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          'analysis_id': analysisId,
+          'base_filename': `contract-report-${analysisId}`,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || 'Failed to generate report');
+      }
+
+      // After generation, try to fetch the report again
+      setTimeout(() => {
+        fetchReportData();
+      }, 2000);
+    } catch (err) {
+      console.error('Error generating report:', err);
+      setError(err instanceof Error ? err.message : 'Failed to generate report');
     }
   };
 
@@ -120,7 +151,14 @@ const BeforeSignReport: React.FC<BeforeSignReportProps> = ({ analysisId, isActiv
     return (
       <div className="text-center py-12">
         <DocumentTextIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-        <p className="text-gray-600">No report data available</p>
+        <p className="text-gray-600 mb-6">No report data available</p>
+        <button
+          onClick={generateReport}
+          className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center space-x-2"
+        >
+          <DocumentTextIcon className="h-5 w-5" />
+          <span>Generate Before-Sign Report</span>
+        </button>
       </div>
     );
   }
