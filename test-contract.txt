@@ -1,0 +1,22 @@
+SERVICE AGREEMENT
+
+This Service Agreement is entered into on this date between Provider and Client.
+
+1. SERVICES
+Provider agrees to provide web development services to Client. Services include:
+- Website design and development
+- Maintenance and support
+- Technical consultation
+
+2. PAYMENT
+Client agrees to pay Provider $5,000 for services rendered.
+Payment terms: Net 30 days.
+
+3. TERM
+This agreement shall remain in effect for 12 months.
+
+4. TERMINATION
+Either party may terminate with 30 days notice.
+
+5. CONFIDENTIALITY
+Both parties agree to keep all information confidential.
