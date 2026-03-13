@@ -7,14 +7,65 @@ from fastapi.responses import JSONResponse
 from typing import Optional, Dict, Any
 import json
 import asyncio
+import os
+import tempfile
+from pathlib import Path
 
 from services.version_comparison import VersionComparisonAgent
+from services.document_parser import DocumentParserAgent
 from storage import get_analysis_store
 
 router = APIRouter(prefix="/api", tags=["version-comparison"])
 
 # Initialize agent
 comparison_agent = VersionComparisonAgent()
+document_parser = DocumentParserAgent()
+
+async def extract_text_from_file(content: bytes, filename: str) -> str:
+    """Extract text from file content based on file type"""
+    try:
+        # Get file extension
+        file_ext = Path(filename).suffix.lower()
+        
+        # For text files, decode directly
+        if file_ext in ['.txt', '.md', '.py', '.js', '.html', '.css']:
+            try:
+                return content.decode('utf-8')
+            except UnicodeDecodeError:
+                try:
+                    return content.decode('latin-1')
+                except UnicodeDecodeError:
+                    return content.decode('utf-8', errors='ignore')
+        
+        # For binary files (PDF, DOCX), use document parser
+        elif file_ext in ['.pdf', '.docx', '.doc']:
+            # Create temporary file
+            with tempfile.NamedTemporaryFile(delete=False, suffix=file_ext) as temp_file:
+                temp_file.write(content)
+                temp_file_path = temp_file.name
+            
+            try:
+                # Parse document using document parser
+                result = await document_parser.parse_document(temp_file_path)
+                text = result.get('text', '')
+                return text
+            finally:
+                # Clean up temporary file
+                try:
+                    os.unlink(temp_file_path)
+                except:
+                    pass
+        
+        # Default: try to decode as text
+        else:
+            try:
+                return content.decode('utf-8')
+            except UnicodeDecodeError:
+                return content.decode('utf-8', errors='ignore')
+                
+    except Exception as e:
+        # Fallback: return error message as text
+        return f"Error extracting text from {filename}: {str(e)}"
 
 @router.post("/version-comparison/compare-texts")
 async def compare_contract_texts(
@@ -71,22 +122,9 @@ async def compare_contract_files(
         original_content = await original_file.read()
         modified_content = await modified_file.read()
         
-        # Decode text content with error handling
-        try:
-            original_text = original_content.decode('utf-8')
-        except UnicodeDecodeError:
-            try:
-                original_text = original_content.decode('latin-1')
-            except UnicodeDecodeError:
-                original_text = original_content.decode('utf-8', errors='ignore')
-        
-        try:
-            modified_text = modified_content.decode('utf-8')
-        except UnicodeDecodeError:
-            try:
-                modified_text = modified_content.decode('latin-1')
-            except UnicodeDecodeError:
-                modified_text = modified_content.decode('utf-8', errors='ignore')
+        # Extract text based on file type
+        original_text = await extract_text_from_file(original_content, original_file.filename)
+        modified_text = await extract_text_from_file(modified_content, modified_file.filename)
         
         # Compare versions
         response = await comparison_agent.compare_versions(
