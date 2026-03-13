@@ -235,7 +235,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
             "img-src 'self' data: https: https://cdn.jsdelivr.net https://fastapi.tiangolo.com; "
             "font-src 'self' https://cdn.jsdelivr.net; "
-            "connect-src 'self'"
+            "connect-src 'self' ws://localhost:* wss://localhost:* http://localhost:* https://localhost:*"
         )
         response.headers["Permissions-Policy"] = (
             "geolocation=(), microphone=(), camera=(), "
