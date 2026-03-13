@@ -1,0 +1,15 @@
+# Railway configuration for frontend
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "npm run build && npm start"
+healthcheckPath = "/"
+healthcheckTimeout = 100
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 10
+
+[variables]
+PORT = "3000"
+NODE_ENV = "production"
+NEXT_TELEMETRY_DISABLED = "1"

@@ -200,3 +200,28 @@ reports/
 
 # Analysis results (temporary storage)
 *.analysis.json
+
+# LangGraph API cache
+.langgraph_api/
+
+# Test files and scripts
+test_*.txt
+test_*.py
+test_*.html
+analyze_*.py
+debug_*.py
+
+# Temporary and backup files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+
+# Compressed files
+*.zip
+*.tar.gz
+*.rar
+
+# Railway logs
+railway.log
