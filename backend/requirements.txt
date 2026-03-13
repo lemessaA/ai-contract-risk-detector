@@ -7,10 +7,19 @@ python-multipart
 langchain
 langchain-groq    
 langgraph
+langsmith
 
 # Document Processing
 PyPDF2
 python-docx 
+
+# Report Generation
+reportlab
+jinja2
+
+# Web Scraping
+aiohttp
+beautifulsoup4
 
 # Data Processing
 pydantic
